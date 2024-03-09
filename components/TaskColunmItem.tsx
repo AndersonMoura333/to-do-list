@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { deleteTask } from "@/store/todoListSlice";
 import { StatusTask } from "./statusTask";
 import { PriorityStatusTask } from "./PriorityStatusTask";
+import { TaskOptions } from "./TaskOptions";
 
 
 
@@ -25,18 +26,7 @@ export const TaskColumnItem = ({ title, description, status, priority, id }: Tas
                         <FaSheetPlastic />
                         <p>{title}</p>
                     </div>
-                    <div className="flex space-x-2">
-                        <div className="flex justify-center items-center p-2 rounded-full hover:bg-stone-700 cursor-pointer"
-                            onClick={() => setOpenModal(true)}
-                        >
-                            <MdModeEdit />
-                        </div>
-                        <div className="flex justify-center items-center p-2 rounded-full hover:bg-stone-700 cursor-pointer"
-                            onClick={() => dispatch(deleteTask(id))}
-                        >
-                            <RiDeleteBin6Fill />
-                        </div>
-                    </div>
+                    <TaskOptions task={{description, id,priority,status,title}}/>
                 </div>
                 <div className="px-4 text-sm bg-stone-800 rounded-xl max-h-28 overflow-y-scroll overflow-x-hidden">
                     <p>{description}</p>

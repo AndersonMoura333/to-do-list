@@ -77,7 +77,7 @@ export const Task = ({ description = "", priority = "Alta", status = "Pendente",
                             onClick={() => {
                                 const newTask = { id: id ? id : uuid(), description: newDescription, title: newTitle, priority: newPriority, status: newStatus }
                                 hasNew ? dispatch(setTask(newTask)) : dispatch(editTask({ taskId: newTask.id, newTask }))
-                                dispatch(orderBy("maior prioridade"))
+                                dispatch(orderBy())
                                 setOpen()
                             }
                             } 

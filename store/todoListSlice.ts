@@ -4,11 +4,13 @@ import { TaskType } from "@/types";
 interface TodoListSliceProps {
     hasList: boolean;
     tasks: TaskType[];
+    orderBy: "Maior prioridade" | "Menor prioridade" | "Concluído" | "Pendente"
 }
 
 const initialState: TodoListSliceProps = {
     hasList: false,
-    tasks: []
+    tasks: [],
+    orderBy: "Maior prioridade"
 };
 
 export const todoListSlice = createSlice({
@@ -38,12 +40,15 @@ export const todoListSlice = createSlice({
         deleteCompletedTasks: (state)=> {
             state.tasks = state.tasks.filter(task => task.status !== "Concluído")
         },
-        orderBy:(state, action: PayloadAction<string>) =>{
-            const order = action.payload;
+        setOrderBy: (state, action: PayloadAction<"Maior prioridade" | "Menor prioridade" | "Concluído" | "Pendente">) => {
+            state.orderBy = action.payload;
+        },
+        orderBy: (state) =>{
+            const order = state.orderBy;
             const sortedTasks = [...state.tasks]; 
             
             switch (order) {
-                case "menor prioridade":
+                case "Menor prioridade":
                     sortedTasks.sort((a, b) => {
                         if (a.priority === b.priority) {
                             return 0;
@@ -51,7 +56,7 @@ export const todoListSlice = createSlice({
                         return a.priority === "Baixa" ? -1 : (b.priority === "Baixa" ? 1 : (a.priority === "Média" ? -1 : 1));
                     });
                     break;
-                case "maior prioridade":
+                case "Maior prioridade":
                     sortedTasks.sort((a, b) => {
                         if (a.priority === b.priority) {
                             return 0;
@@ -59,7 +64,7 @@ export const todoListSlice = createSlice({
                         return a.priority === "Alta" ? -1 : (b.priority === "Alta" ? 1 : (a.priority === "Média" ? -1 : 1));
                     });
                     break;
-                case "concluido":
+                case "Concluído":
                     sortedTasks.sort((a, b) => {
                         if (a.status === b.status) {
                             return 0;
@@ -67,7 +72,7 @@ export const todoListSlice = createSlice({
                         return a.status === "Concluído" ? -1 : 1;
                     });
                     break;
-                case "pendente":
+                case "Pendente":
                     sortedTasks.sort((a, b) => {
                         if (a.status === b.status) {
                             return 0;
@@ -81,9 +86,8 @@ export const todoListSlice = createSlice({
             
             state.tasks = sortedTasks; 
         }
-           
     }
 });
 
-export const { setHasList, setTask, editTask, deleteTask, deleteCompletedTasks, orderBy } = todoListSlice.actions;
+export const { setHasList, setTask, editTask, deleteTask, deleteCompletedTasks, orderBy, setOrderBy } = todoListSlice.actions;
 export default todoListSlice.reducer;
