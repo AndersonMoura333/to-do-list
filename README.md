@@ -4,6 +4,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, run the development server:
 
+EM SERVICES/API SUPISTITUA A BASE_URL PELA SUA CONEXÃO COM A API
 ```bash
 npm run dev
 # or
