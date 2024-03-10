@@ -9,7 +9,7 @@ type User = {
     confirmPassword?:string
 }
 
-const baseUrl = 'http://localhost:3001/'
+const baseUrl = 'URL DE CONEXÃO COM O BACK END'
 export const apiService = {
     login: async (user: User) =>{
         try {
