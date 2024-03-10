@@ -1,5 +1,5 @@
 "use client";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Appbar } from "../components/Appbar";
 import { TaskColumn } from "../components/TaskColumn";
 import { RootState } from "@/store";
@@ -7,6 +7,9 @@ import { Task } from "@/components/Task";
 import { TaskColumnType, TaskType } from "@/types";
 import { useEffect, useState } from "react";
 import { TaskRow } from "@/components/TaskRow";
+import { apiService } from "./services/api";
+import { authService } from "./services/auth";
+import { setAllTask } from "@/store/todoListSlice";
 
 
 export default function Home() {
@@ -14,7 +17,9 @@ export default function Home() {
   const hasList = useSelector((state: RootState) => state.todoList.hasList);
   const [pendingTasks, setPendingTasks] = useState<string[]>([])
   const [completedTasks, setCompletedTasks] = useState<string[]>([])
-  const tasks = useSelector((state: RootState) => state.todoList.tasks)
+  const tasks = useSelector((state: RootState) => state.todoList.filteredTasks)
+  const user = authService.isUserAuthenticated()
+  const dispatch = useDispatch()
 
 //   useEffect(() => {
 //     tasks.forEach((task,i) => {
@@ -64,6 +69,16 @@ export default function Home() {
         }
     });
 }, [tasks]);
+
+useEffect(()=>{
+  const getData = async() => {
+    const data: TaskType[]= await apiService.getAllTask(user.id, user.access_token)
+    console.log("dtta", data)
+    dispatch(setAllTask(data))
+  }
+
+  getData()
+}, [])
 
   return (
     <main className="flex min-h-screen flex-col overflow-x-hidden">

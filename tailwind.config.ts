@@ -9,6 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
+        "white-mask": "url('./assets/mascaraBranca.png')",
+        "post-it": "url('./assets/post-it.jpg')",
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",

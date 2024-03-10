@@ -1,6 +1,8 @@
 "use client"
+import { apiService } from "@/app/services/api";
+import { authService } from "@/app/services/auth";
 import { deleteTask, editTask, orderBy, setTask } from "@/store/todoListSlice";
-import { useState } from "react";
+import { use, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
 import { uuid } from 'uuidv4';
@@ -18,6 +20,7 @@ export type TaskProps = {
 export const Task = ({ description = "", priority = "Alta", status = "Pendente", title = "", open, setOpen, hasNew, id }: TaskProps) => {
 
     const [newTitle, setNewTitle] = useState(title)
+    const user = authService.isUserAuthenticated()
     const [newDescription, setNewDescription] = useState(description)
     const [newPriority, setNewPriority] = useState<"Alta" | "Baixa" | "Média">(priority)
     const [newStatus, setNewStatus] = useState<"Pendente" | "Concluído">(status)
@@ -67,6 +70,8 @@ export const Task = ({ description = "", priority = "Alta", status = "Pendente",
                         onClick={() => {
                             console.log("id", id)
                             dispatch(deleteTask(id!))
+                            apiService.deleteTask(id!, user.access_token)
+                            
                             setOpen()
                         }
                         }
@@ -75,10 +80,26 @@ export const Task = ({ description = "", priority = "Alta", status = "Pendente",
                         }
                         <button className="bg-blue-600 py-2 px-4 rounded-lg hover:bg-blue-800 target:bg-blue-900"
                             onClick={() => {
-                                const newTask = { id: id ? id : uuid(), description: newDescription, title: newTitle, priority: newPriority, status: newStatus }
-                                hasNew ? dispatch(setTask(newTask)) : dispatch(editTask({ taskId: newTask.id, newTask }))
-                                dispatch(orderBy())
-                                setOpen()
+                                const newTask = { 
+                                    id: id ? id : uuid(), 
+                                    description: newDescription, 
+                                    title: newTitle, 
+                                    priority: newPriority, 
+                                    status: newStatus 
+                                };
+                                
+                                if (hasNew) {
+                                    dispatch(setTask(newTask));
+                                    apiService.createTask(user.id, newTask, user.access_token );
+                                } else {
+                                    dispatch(editTask({ taskId: newTask.id, newTask }));
+                                    apiService.putTask(user.id, newTask, user.access_token );
+
+                                }
+                                
+                                dispatch(orderBy());
+                                setOpen();
+                                
                             }
                             } 
                         >{hasNew ? "Criar" : "Editar"}</button>

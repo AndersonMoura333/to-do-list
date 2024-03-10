@@ -31,19 +31,6 @@ export const Select: React.FC<SelectProps> = ({ options, onChange, value }) => {
             aria-expanded="true"
           >
             {value}
-            <svg
-              className="-mr-1 ml-2 h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 12a2 2 0 100-4 2 2 0 000 4z"
-                clipRule="evenodd"
-              />
-            </svg>
           </button>
         </span>
       </div>

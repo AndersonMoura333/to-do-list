@@ -4,13 +4,17 @@ import { TaskType } from "@/types";
 interface TodoListSliceProps {
     hasList: boolean;
     tasks: TaskType[];
-    orderBy: "Maior prioridade" | "Menor prioridade" | "Concluído" | "Pendente"
+    orderBy: "Maior prioridade" | "Menor prioridade" | "Concluído" | "Pendente",
+    filterBy: "Todas"| "Alta" | "Média" | "Baixa" | "Concluído" | "Pendente",
+    filteredTasks: TaskType[]
 }
 
 const initialState: TodoListSliceProps = {
-    hasList: false,
+    hasList: true,
     tasks: [],
-    orderBy: "Maior prioridade"
+    orderBy: "Maior prioridade",
+    filterBy: "Todas",
+    filteredTasks: []
 };
 
 export const todoListSlice = createSlice({
@@ -22,7 +26,12 @@ export const todoListSlice = createSlice({
             console.log("state", state.hasList);
         },
         setTask: (state, action: PayloadAction<TaskType>) => {
-            state.tasks.push(action.payload);
+            state.tasks.push(action.payload)
+            filterTasks(state);
+        },
+        setAllTask: (state, action: PayloadAction<TaskType[]>) => {
+            state.tasks = action.payload
+            filterTasks(state);
         },
         editTask: (state, action: PayloadAction<{ taskId: string; newTask: TaskType }>) => {
             const { taskId, newTask } = action.payload;
@@ -31,14 +40,17 @@ export const todoListSlice = createSlice({
             console.log("index", taskIndex, taskId)
             if (taskIndex !== -1) {
                 state.tasks[taskIndex] = newTask;
+                filterTasks(state);
             }
         },
         deleteTask: (state, action: PayloadAction<string>) => {
             const taskId = action.payload;
             state.tasks = state.tasks.filter(task => task.id !== taskId);
+            filterTasks(state);
         },
         deleteCompletedTasks: (state)=> {
             state.tasks = state.tasks.filter(task => task.status !== "Concluído")
+            
         },
         setOrderBy: (state, action: PayloadAction<"Maior prioridade" | "Menor prioridade" | "Concluído" | "Pendente">) => {
             state.orderBy = action.payload;
@@ -84,10 +96,81 @@ export const todoListSlice = createSlice({
                     break;
             }
             
-            state.tasks = sortedTasks; 
+            state.filteredTasks = sortedTasks; 
+        },
+        setFilterBy: (state, action: PayloadAction<"Todas" | "Alta" | "Média" | "Baixa" | "Concluído" | "Pendente">) => {
+            state.filterBy = action.payload;
+            const filteredTasks = state.tasks.filter(task => {
+                switch (action.payload) {
+                    case "Alta":
+                        return task.priority === "Alta";
+                    case "Média":
+                        return task.priority === "Média";
+                    case "Baixa":
+                        return task.priority === "Baixa";
+                    case "Concluído":
+                        return task.status === "Concluído";
+                    case "Pendente":
+                        return task.status === "Pendente";
+                    default:
+                        return true;
+                }
+            });
+            state.filteredTasks = filteredTasks;
+        },
+        setSearchQuery: (state, action: PayloadAction<string>) => {
+            const searchQuery = action.payload.toLowerCase();
+            state.filteredTasks = state.tasks.filter(task =>
+                task.title.toLowerCase().includes(searchQuery) ||
+                task.description.toLowerCase().includes(searchQuery)
+            );
+            if(searchQuery ===""){
+                state.filteredTasks = state.tasks
+            }
         }
+
+
+        // setFilteredTasks: (state) => {
+        //     const filteredTasks = state.tasks.filter(task => {
+        //         switch (state.filterBy) {
+        //             case "Alta":
+        //                 return task.priority === "Alta";
+        //             case "Média":
+        //                 return task.priority === "Média";
+        //             case "Baixa":
+        //                 return task.priority === "Baixa";
+        //             case "Concluído":
+        //                 return task.status === "Concluído";
+        //             case "Pendente":
+        //                 return task.status === "Pendente";
+        //             default:
+        //                 return true;
+        //         }
+        //     });
+        //     state.filteredTasks = filteredTasks;
+        // }
     }
 });
 
-export const { setHasList, setTask, editTask, deleteTask, deleteCompletedTasks, orderBy, setOrderBy } = todoListSlice.actions;
+const filterTasks = (state: TodoListSliceProps) => {
+    const filteredTasks = state.tasks.filter(task => {
+        switch (state.filterBy) {
+            case "Alta":
+                return task.priority === "Alta";
+            case "Média":
+                return task.priority === "Média";
+            case "Baixa":
+                return task.priority === "Baixa";
+            case "Concluído":
+                return task.status === "Concluído";
+            case "Pendente":
+                return task.status === "Pendente";
+            default:
+                return true;
+        }
+    });
+    state.filteredTasks = filteredTasks;
+}
+
+export const { setHasList, setTask, editTask, deleteTask, deleteCompletedTasks, orderBy, setOrderBy, setAllTask,setFilterBy, setSearchQuery} = todoListSlice.actions;
 export default todoListSlice.reducer;
